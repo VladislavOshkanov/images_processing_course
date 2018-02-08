@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtWidgets import (QLabel,QMainWindow, QTextEdit,
     QAction, QFileDialog, QApplication, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PIL.ImageQt import ImageQt
 from PIL import Image
 import skimage
@@ -16,24 +16,45 @@ class Example(QMainWindow):
         super().__init__()
 
         self.initUI()
+        self.type = "square"
+        self.rubberband = QtWidgets.QRubberBand(QtWidgets.QRubberBand.Rectangle, self)
+        self.setMouseTracking(True)
     def mousePressEvent(self, QMouseEvent):
-        pos = QMouseEvent.pos()
-        norm_array = np.divide(self.img_array, 255.0)
-        # print (self.img_array[pos.x()][pos.y() - 28])
-        RGB = norm_array[pos.x()][pos.y() - 28]
-        max = np.amax(RGB)
-        min = np.amin(RGB)
-        R = RGB[0]
-        G = RGB[1]
-        B = RGB[2]
-        print('R: {0:.1f}.'.format(R))
-        print('G: {0:.1f}.'.format(G))
-        print('B: {0:.1f}.'.format(B))
-        self.pointHSV(R,G,B,max, min)
-        XYZ = self.RGBtoXYZ(RGB)
-        # print (XYZ)
-        self.XYZtoLAB(XYZ)
+        if self.type == "dot":
+            pos = QMouseEvent.pos()
+            norm_array = np.divide(self.img_array, 255.0)
+            # print (self.img_array[pos.x()][pos.y() - 28])
+            RGB = norm_array[pos.x()][pos.y() - 28]
+            max = np.amax(RGB)
+            min = np.amin(RGB)
+            R = RGB[0]
+            G = RGB[1]
+            B = RGB[2]
+            print('R: {0:.1f}.'.format(R))
+            print('G: {0:.1f}.'.format(G))
+            print('B: {0:.1f}.'.format(B))
+            self.pointHSV(R,G,B,max, min)
+            XYZ = self.RGBtoXYZ(RGB)
+            # print (XYZ)
+            self.XYZtoLAB(XYZ)
+        elif self.type == "square":
+            self.origin = QMouseEvent.pos()
+            self.rubberband.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
+            self.rubberband.show()
+            # QtWidgets.mousePressEvent(self, QMouseEvent)
+            # self.mousePressEvent(QMouseEvent)
 
+
+    def mouseMoveEvent(self, event):
+        if self.rubberband.isVisible():
+            self.rubberband.setGeometry(QtCore.QRect(self.origin, event.pos()))
+            # self.mouseMoveEvent(self,event)
+    def mouseReleaseEvent(self, event):
+        rect = self.rubberband.geometry()
+        print (rect.x())
+        print (rect.y())
+        print (rect.x() + rect.width())
+        print (rect.y() + rect.height())
     def XYZtoLAB(self, XYZ):
         Xn = 0.31382
         Yn = 0.33100
