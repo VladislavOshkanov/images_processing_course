@@ -36,9 +36,9 @@ class Example(QMainWindow):
             G = RGB[1]
             B = RGB[2]
             print()
-            print('R: {0:.1f}.'.format(R))
-            print('G: {0:.1f}.'.format(G))
-            print('B: {0:.1f}.'.format(B))
+            print('R: {0:.1f}.'.format(R*255))
+            print('G: {0:.1f}.'.format(G*255))
+            print('B: {0:.1f}.'.format(B*255))
             self.pointHSV(R,G,B,max, min)
             XYZ = self.RGBtoXYZ(RGB)
             self.XYZtoLAB(XYZ)
@@ -118,6 +118,8 @@ class Example(QMainWindow):
                     self.a[i][j] = LAB[1]
                     self.b[i][j] = LAB[2]
         arr = []
+        self.RGB = np.divide(self.img_array, 255.)
+        self.RGBarrToLAB(self.RGB)
         for i in range (0, self.lab.shape[0]):
             for j in range (0, self.lab.shape[1]):
                 if (i % self.SKIP == 0 and j % self.SKIP == 0):
@@ -207,6 +209,17 @@ class Example(QMainWindow):
                        [0.000, 0.010, 0.989]])
         XYZ = self.RGBtoXYZ(RGB)
         return self.XYZtoLAB(XYZ)
+    @jit
+    def RGBarrToLAB (self, RGB_ARR):
+        LAB_ARR = np.copy(RGB_ARR)
+        for idx in np.ndindex(LAB_ARR.shape[:2]):
+            fx = (0.488*LAB_ARR[idx][0]+0.310*LAB_ARR[idx][1]+0.200*LAB_ARR[idx][2])**(1/3)
+            fy = (0.176*LAB_ARR[idx][0]+0.812*LAB_ARR[idx][1]+0.010*LAB_ARR[idx][2])**(1/3)
+            fz = (0.01*LAB_ARR[idx][1] + 0.989*LAB_ARR[idx][2])**(1/3)
+            LAB_ARR[idx][0] = 116 * fx - 16
+            LAB_ARR[idx][1] = 500 * (fx - fy)
+            LAB_ARR[idx][2] = 200 * (fy - fz)
+        print ("done")
 
     def XYZtoLAB(self, XYZ):
         Xn = 1.0
@@ -229,6 +242,7 @@ class Example(QMainWindow):
         a = 500 * (fx - fy)
         b = 200 * (fy - fz)
         if (self.type == "dot"):
+            print()
             print('L: {0:.1f}.'.format(L))
             print('a: {0:.1f}.'.format(a))
             print('b: {0:.1f}.'.format(b))
@@ -280,6 +294,7 @@ class Example(QMainWindow):
 
         V *= 100
         if (self.type == "dot") :
+            print()
             print('H: {0:.1f}.'.format(H))
             print('S: {0:.1f}.'.format(S))
             print('V: {0:.1f}.'.format(V))
