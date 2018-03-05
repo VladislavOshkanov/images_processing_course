@@ -12,7 +12,7 @@ class loader
 public:
     loader();
     static Image load(QString fname);
-    static void saveTmpImage(Image img);
+    static void saveTmpImage(Image img, QString path);
 };
 
 #endif // LOADER_H

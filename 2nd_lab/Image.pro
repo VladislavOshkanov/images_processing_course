@@ -29,14 +29,18 @@ SOURCES += \
     loader.cpp \
     converter.cpp \
     image.cpp \
-    filter.cpp
+    filter.cpp \
+    allocator.cpp \
+    secondwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     loader.h \
     converter.h \
     image.h \
-    filter.h
+    filter.h \
+    allocator.h \
+    secondwindow.h
 
 FORMS += \
         mainwindow.ui

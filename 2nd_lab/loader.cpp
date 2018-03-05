@@ -39,7 +39,7 @@ Image loader::load (QString fname)
     return Image(array, qimg.width(), qimg.height());
 }
 
-void loader::saveTmpImage(Image img){
+void loader::saveTmpImage(Image img, QString path){
     float *** rgb = img.RGB;
     QImage tmp(QSize(img.width, img.height), QImage::Format_RGB888);
     for ( int row = 0; row < img.width; row++ )
@@ -49,8 +49,9 @@ void loader::saveTmpImage(Image img){
             float g = static_cast<int>(rgb[row][col][1] * 255);
             float b = static_cast<int>(rgb[row][col][2] * 255);
 //            std::cout << r << " " << g << " " << b << std::endl;
+//            std::cout << r << " " << g << " " << b << std::endl;
             tmp.setPixelColor(row,col, QColor(r,g,b));
 
         }
-tmp.save(QString("/tmp/img.jpg"));
+tmp.save(path);
 }
